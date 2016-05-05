@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='style.css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src='matter.min.js'></script>
+  </head>
+  <body>
+    <canvas id='main-canvas'></canvas>
+    <canvas id='composite-canvas'></canvas>
+    <script src='physics.js'></script>
+    <script type='text/javascript'>
+      var mouse = {x: undefined, y: undefined};
+
+
+      $(document).mousemove(function(event){
+        mouse.x = event.pageX;
+        mouse.y = event.pageY;
+        Body.setPosition(mousePoint, mouse);
+        var angle =  90;
+        for (var i = 0; i < 15; i++){
+          var extra = 0;
+          if (i % 3 !=0 ){
+            extra = 20;
+          }
+          var point = {x: mouse.x + ( (300 + extra) * Math.cos(Math.PI/180 * angle)),
+                      y: mouse.y + ( (300 + extra) * Math.sin(Math.PI/180 * angle))};
+          Body.setPosition(staticPoints[i], point);
+          angle -= 360/15;
+
+        }
+      });
+
+
+
+      var mainCanvas = document.getElementById('main-canvas');
+      var ctx = mainCanvas.getContext('2d');
+      var compositeCanvas = document.getElementById('composite-canvas');
+      var gco = compositeCanvas.getContext('2d');
+      mainCanvas.width = window.innerWidth;
+      compositeCanvas.width = window.innerWidth;
+      mainCanvas.height= window.innerHeight;
+      compositeCanvas.height = window.innerHeight;
+
+
+      var rects = [];
+      RECT = function(){
+        this.x = Math.random() * mainCanvas.width;
+        this.y = Math.random() * mainCanvas.height;
+        this.size = Math.random() * 200
+        this.oscillation = Math.random();
+        var color = "hsl(" + Math.floor(Math.random() * 360) + ", 90%, 50%)";
+        this.color = color;
+        this.dx = 1 - Math.random() * 2;
+        this.dy = 1 - Math.random() * 2;
+        this.testBoundaries = function(){
+          if ( (this.x +  this.size + (Math.sin(this.oscillation) * this.size/4) )>= mainCanvas.width || this.x <= 0){
+            this.dx *= -1;
+          }
+          if ( (this.y +  this.size + (Math.sin(this.oscillation) * this.size/4) )>= mainCanvas.height || this.y <= 0){
+            this.dy *= -1;
+          }
+        }
+      }
+      for (var i = 0; i < 175; i++){
+        rects.push(new RECT());
+      }
+
+      var updateWobble = function(){
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+        ctx.fillRect(0,0,mainCanvas.width,mainCanvas.height);
+/*
+        for (var i = 0; i < rects.length; i++){
+          rects[i].x += rects[i].dx;
+          rects[i].y += rects[i].dy;
+          rects[i].testBoundaries();
+          ctx.beginPath();
+          ctx.fillStyle = rects[i].color;
+          //console.log(ctx.fillStyle);
+          var tempSize = rects[i].size + (Math.sin(rects[i].oscillation) * rects[i].size/4)
+          ctx.rect( (rects[i].x - tempSize/2),(rects[i].y - tempSize/2), tempSize,tempSize);
+          ctx.fill();
+          ctx.closePath();
+        }
+*/
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.beginPath();
+        ctx.moveTo(renderPoints[0].position.x, renderPoints[0].position.y);
+        for (var i = 1; i < renderPoints.length-1; i++){
+          var nextPoint;
+          if (renderPoints[i+2] != undefined){
+            nextPoint = renderPoints[i+2];
+          } else {
+            nextPoint = renderPoints[0];
+          }
+          ctx.bezierCurveTo(renderPoints[i].position.x, renderPoints[i].position.y,  renderPoints[i+1].position.x, renderPoints[i+1].position.y,  nextPoint.position.x, nextPoint.position.y);
+        }
+        ctx.fillStyle = 'black';
+        ctx.fill();
+        ctx.closePath();
+
+      }
+      setInterval(updateWobble, 25);
+
+
+    </script>
+  </body>
+</html>
