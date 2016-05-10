@@ -4,27 +4,32 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src='matter.min.js'></script>
+    <script type='text/javascript' src='smooth.js'></script>
   </head>
   <body>
     <canvas id='main-canvas'></canvas>
     <canvas id='composite-canvas'></canvas>
     <script src='physics.js'></script>
     <script type='text/javascript'>
-      var mouse = {x: undefined, y: undefined};
+      var mouse = {x: 10, y: 10};
 
-
+      $(document).click(function(){//0.000015 plus or minus
+        var r = Math.round(Math.random() * 15);
+        var dX = (renderPoints[r].position.x - mouse.x)/19505000;
+        var dY = (renderPoints[r].position.y - mouse.y)/19505000;
+        console.log(dX);
+        vel.x = dX;
+        vel.y = dY;
+        Body.applyForce(renderPoints[r], vel,vel);
+      })
       $(document).mousemove(function(event){
         mouse.x = event.pageX;
         mouse.y = event.pageY;
         Body.setPosition(mousePoint, mouse);
         var angle =  90;
         for (var i = 0; i < 15; i++){
-          var extra = 0;
-          if (i % 3 !=0 ){
-            extra = 20;
-          }
-          var point = {x: mouse.x + ( (300 + extra) * Math.cos(Math.PI/180 * angle)),
-                      y: mouse.y + ( (300 + extra) * Math.sin(Math.PI/180 * angle))};
+          var point = {x: mouse.x + ( (300) * Math.cos(Math.PI/180 * angle)),
+                      y: mouse.y + ( (300) * Math.sin(Math.PI/180 * angle))};
           Body.setPosition(staticPoints[i], point);
           angle -= 360/15;
 
@@ -41,7 +46,10 @@
       compositeCanvas.width = window.innerWidth;
       mainCanvas.height= window.innerHeight;
       compositeCanvas.height = window.innerHeight;
-
+      var renderedCircle = new SmoothPath(ctx);
+      renderPoints.forEach(function(r){
+        renderedCircle.positions.push(new SmoothPoint(r.position.x,r.position.y));
+      });
 
       var rects = [];
       RECT = function(){
@@ -70,7 +78,7 @@
         ctx.globalCompositeOperation = 'source-over';
         ctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
         ctx.fillRect(0,0,mainCanvas.width,mainCanvas.height);
-/*
+
         for (var i = 0; i < rects.length; i++){
           rects[i].x += rects[i].dx;
           rects[i].y += rects[i].dy;
@@ -83,25 +91,19 @@
           ctx.fill();
           ctx.closePath();
         }
-*/
+
         ctx.globalCompositeOperation = 'destination-in';
-        ctx.beginPath();
-        ctx.moveTo(renderPoints[0].position.x, renderPoints[0].position.y);
-        for (var i = 1; i < renderPoints.length-1; i++){
-          var nextPoint;
-          if (renderPoints[i+2] != undefined){
-            nextPoint = renderPoints[i+2];
-          } else {
-            nextPoint = renderPoints[0];
-          }
-          ctx.bezierCurveTo(renderPoints[i].position.x, renderPoints[i].position.y,  renderPoints[i+1].position.x, renderPoints[i+1].position.y,  nextPoint.position.x, nextPoint.position.y);
+        for (var i = 0; i < renderedCircle.positions.length; i++){
+          renderedCircle.positions[i].x = renderPoints[i].position.x;
+          renderedCircle.positions[i].y = renderPoints[i].position.y;
         }
-        ctx.fillStyle = 'black';
-        ctx.fill();
-        ctx.closePath();
+        renderedCircle.updateHandles();
+        renderedCircle.draw();
+        //renderedCircle.debugDraw();
 
       }
-      setInterval(updateWobble, 25);
+
+      setInterval(updateWobble, 1000/60);
 
 
     </script>

@@ -17,7 +17,7 @@ var render = Render.create({
   element: document.body,
   engine: engine
 });
-
+var vel = Vector.create(0.00001,0.00001);
 var mousePoint = Bodies.circle(10, 10, 2, {isStatic: true});
 var mouseBall = Bodies.circle(10, 10, 100);
 var ballConstraint = Constraint.create({bodyA: mousePoint, bodyB: mouseBall, length: 5, stiffness: 0.02});
@@ -29,7 +29,7 @@ var chainOne = [];
 var chainTwo = [];
 for (var i = 0; i < 15; i++){
   staticPoints.push(Bodies.circle(20 + i * 20, 300, 20, {isStatic: true}));
-  renderPoints.push(Bodies.circle(20 + i * 20, 400, 50, {mass: 0.00001}));
+  renderPoints.push(Bodies.circle(20 + i * 20, 400, 20, {mass: 0.00001}));
   constraints.push(Constraint.create({bodyA: staticPoints[i], bodyB: renderPoints[i], length: 2, stiffness: 0.05}));
 }
 var chainLength = 120
@@ -56,4 +56,4 @@ World.add(engine.world, constraints);
 
 Engine.run(engine);
 
-Render.run(render);
+//Render.run(render);
