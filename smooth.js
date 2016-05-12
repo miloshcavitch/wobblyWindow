@@ -73,6 +73,7 @@ ctx.moveTo(this.positions[0].x, this.positions[0].y);
 for (var i = 0; i < this.positions.length-1; i++){
   ctx.bezierCurveTo(this.positions[i].handleOut.x,this.positions[i].handleOut.y,  this.positions[i+1].handleIn.x,this.positions[i+1].handleIn.y,  this.positions[i+1].x,this.positions[i+1].y);
 }
+ctx.bezierCurveTo(this.positions[this.positions.length-1].handleOut.x,this.positions[this.positions.length-1].handleOut.y,  this.positions[0].handleIn.x,this.positions[0].handleIn.y, this.positions[0].x,this.positions[0].y);
 ctx.fill();
 ctx.closePath();
 }
