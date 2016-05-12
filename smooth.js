@@ -9,45 +9,44 @@ this.positions.push(point);
 }
 
 this.updateHandles = function(){
-for (var i = 0; i < this.positions.length; i++){
-  var firstPoint, secondPoint;
-  if (this.positions[i - 1] === undefined){
-    if (this.isClosed === true){
-      firstPoint = this.positions[this.positions.length-1];
+  for (var i = 0; i < this.positions.length; i++){
+    var firstPoint, secondPoint;
+    if (this.positions[i - 1] === undefined){
+      if (this.isClosed === true){
+        firstPoint = this.positions[this.positions.length-1];
+      } else {
+        firstPoint = this.positions[i];
+      }
     } else {
-      firstPoint = this.positions[i];
+      firstPoint = this.positions[i-1];
     }
-  } else {
-    firstPoint = this.positions[i-1];
-  }
 ///////////////////////////////////////////
-  if (this.positions[i+1] === undefined){
-    if (this.isClosed === true){
-      secondPoint = this.positions[0];
+    if (this.positions[i+1] === undefined){
+      if (this.isClosed === true){
+        secondPoint = this.positions[0];
+      } else {
+        secondPoint = this.positions[i];
+      }
     } else {
-      secondPoint = this.positions[i];
+      secondPoint = this.positions[i+1];
     }
-  } else {
-    secondPoint = this.positions[i+1];
-  }
 
-  this.positions[i].handleLength = Math.hypot(Math.abs(firstPoint.x - secondPoint.x), Math.abs(firstPoint.y - secondPoint.y))/3;
+    var rise = secondPoint.y - firstPoint.y;
+    var run = firstPoint.x - secondPoint.x;
+    var angle = Math.atan(rise/run);
+    var sign;
+    if (firstPoint.x >= secondPoint.x){
+      sign = -1;
+    } else{
+      sign = 1;
+    }
+    this.positions[i].handleIn.x = this.positions[i].x + sign * ((Math.sin(angle - Math.PI/2) * this.positions[i].handleLength/2));
+    this.positions[i].handleIn.y = this.positions[i].y + sign * (Math.cos(angle - Math.PI/2) * this.positions[i].handleLength/2);
+    this.positions[i].handleOut.x = this.positions[i].x - sign * (Math.sin(angle - Math.PI/2) * this.positions[i].handleLength/2);
+    this.positions[i].handleOut.y = this.positions[i].y - sign *(Math.cos(angle - Math.PI/2) * this.positions[i].handleLength/2);
+    //console.log("index" + i + ', handleIn: x: ' + this.positions[i].handleIn.x + ", y: " + this.positions[i].handleIn.y);
+    //console.log("index" + i + ', handleOut: x: ' + this.positions[i].handleOut.x + ", y: " + this.positions[i].handleOut.y);
 
-  var rise = firstPoint.y - secondPoint.y;
-  var run = secondPoint.x - firstPoint.x;
-  var angle = Math.atan(rise/run);
-  this.positions[i].hAngle = angle;
-  this.positions[i].handleIn.x = this.positions[i].x + ((Math.sin(angle - Math.PI/2) * this.positions[i].handleLength/2));
-  this.positions[i].handleIn.y = this.positions[i].y + (Math.cos(angle - Math.PI/2) * this.positions[i].handleLength/2);
-  this.positions[i].handleOut.x = this.positions[i].x - (Math.sin(angle - Math.PI/2) * this.positions[i].handleLength/2);
-  this.positions[i].handleOut.y = this.positions[i].y - (Math.cos(angle - Math.PI/2) * this.positions[i].handleLength/2);
-  if (secondPoint.x - this.positions[i].x <= 0 || i === 11){
-    var tempPoint = this.positions[i].handleIn;
-    this.positions[i].handleIn = this.positions[i].handleOut;
-    this.positions[i].handleOut = tempPoint;
-  }
-  //console.log("index" + i + ', handleIn: x: ' + this.positions[i].handleIn.x + ", y: " + this.positions[i].handleIn.y);
-  //console.log("index" + i + ', handleOut: x: ' + this.positions[i].handleOut.x + ", y: " + this.positions[i].handleOut.y);
   }
 }
 
