@@ -76,6 +76,20 @@ for (var i = 0; i < this.positions.length-1; i++){
 ctx.bezierCurveTo(this.positions[this.positions.length-1].handleOut.x,this.positions[this.positions.length-1].handleOut.y,  this.positions[0].handleIn.x,this.positions[0].handleIn.y, this.positions[0].x,this.positions[0].y);
 ctx.fill();
 ctx.closePath();
+if (isRecording){
+  animationString += "[";
+  for (var i = 0; i < this.positions.length; i++){
+    var handleInX = this.positions[i].handleIn.x - mouse.x;
+    var handleInY = this.positions[i].handleIn.y - mouse.y;
+    var x = this.positions[i].x - mouse.x;
+    var y = this.positions[i].y - mouse.y;
+    var handleOutX = this.positions[i].handleOut.x - mouse.x;
+    var handleOutY = this.positions[i].handleOut.y - mouse.y;
+    animationString += "[{handleIn: { x:" + handleInX + ", y: " + handleInY + "}, pos: {x: " + x + ", y: " + y + "}, handleOut: {x:" + handleOutX + ", y:" + handleOutY + "}}],";
+
+  }
+  animationString += "],";
+}
 }
 }
 

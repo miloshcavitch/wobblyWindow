@@ -12,7 +12,8 @@
     <script src='physics.js'></script>
     <script type='text/javascript'>
       var mouse = {x: 10, y: 10};
-
+      var animationString = 'var animationFrame = [';
+      var isRecording = false;
       $(document).click(function(){//0.000015 plus or minus
         var r = Math.round(Math.random() * 15);
         var dX = (renderPoints[r].position.x - mouse.x)/19505000;
@@ -21,6 +22,7 @@
         vel.x = dX;
         vel.y = dY;
         Body.applyForce(renderPoints[r], vel,vel);
+        isRecording = !isRecording;
       })
       $(document).mousemove(function(event){
         mouse.x = event.pageX;
@@ -99,6 +101,9 @@
         }
         renderedCircle.updateHandles();
         renderedCircle.draw();
+        if ( Math.hypot( (mouseBall.position.x - mousePoint.position.x), (mouseBall.position.y - mousePoint.position.y) ) >= 400 ){
+          console.log('far!');
+        }
         //renderedCircle.debugDraw();
 
       }
